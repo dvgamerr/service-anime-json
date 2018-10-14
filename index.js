@@ -28,7 +28,7 @@ const fsJSONWrite = (root, folder, filename, data) => {
 const toSize = (bytes) => {
   let i = 0
   let aUnit = [ 'B', 'KB', 'MB', 'GB', 'TB' ]
-  while (bytes / 1024 > 0.0 && i < 4) {
+  while (bytes / 1024 > 1 && i < 4) {
     bytes = bytes / 1024
     i++
   }
@@ -84,7 +84,7 @@ const directorys = async (root) => {
 // }).catch(function (e){console.error(e)})
 
 const bar1 = new cli.Bar({}, cli.Presets.shades_grey)
-directorys('F:/Google Drive/NAS-SERVER/#Anime').then(async files => {
+directorys('F:/Anime').then(async files => {
   debuger.info(`Total size: ${toSize(files.size)}`)
   bar1.start(files.total, 0)
   for (let i = 0; i < files.list.length; i++) {
