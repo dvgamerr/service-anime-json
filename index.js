@@ -84,7 +84,7 @@ const directorys = async (root) => {
 // }).catch(function (e){console.error(e)})
 
 const bar1 = new cli.Bar({}, cli.Presets.shades_grey)
-directorys('F:/Anime').then(async files => {
+directorys('F:/Google Drive/NAS-SERVER/Anime-Store-5').then(async files => {
   debuger.info(`Total size: ${toSize(files.size)}`)
   bar1.start(files.total, 0)
   for (let i = 0; i < files.list.length; i++) {
