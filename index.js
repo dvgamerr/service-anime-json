@@ -3,7 +3,7 @@ const path = require('path')
 const walk = require('walk')
 const { debuger } = require('touno.io')
 const mediainfo = require('@touno-io/mediainfo')
-const cli = require('cli-progress')
+// const cli = require('cli-progress')
 const fx = require('mkdir-recursive')
 
 // const EventEmitter = require('events')
@@ -14,10 +14,10 @@ const fx = require('mkdir-recursive')
 // myEmitter.emit('event')
 const fsJSONWrite = (root, folder, filename, data) => {
   let fullPath = path.join(root, folder)
-  fx.mkdirSync(fullPath)
+  if (!fs.existsSync(fullPath)) fx.mkdirSync(fullPath)
   return new Promise((resolve, reject) => {
     let target = `${fullPath}\\${filename}.json`
-    if (fs.existsSync(target)) target = `${fullPath}\\${filename}_${+new Date()}.json`
+    // if (fs.existsSync(target)) target = `${fullPath}\\${filename}_${+new Date()}.json`
 
     fs.writeFile(target, JSON.stringify(data), { encoding: 'utf-8' }, err => {
       if (err) reject(err); else resolve(target)
@@ -47,6 +47,7 @@ const directorys = async (root) => {
     let files = []
     let totalFile = 0
     let totalSize = 0
+
     walker.on('file', (dir, fileStats, next) => {
       totalFile++
       totalSize += fileStats.size
@@ -83,17 +84,24 @@ const directorys = async (root) => {
 //   }
 // }).catch(function (e){console.error(e)})
 
-const bar1 = new cli.Bar({}, cli.Presets.shades_grey)
-directorys('F:/Google Drive/NAS-SERVER/Anime-Store-5').then(async files => {
+// const bar1 = new cli.Bar({}, cli.Presets.shades_grey)
+directorys('F:/Google Drive/NAS-SERVER/Anime-Series').then(async files => {
   debuger.info(`Total size: ${toSize(files.size)}`)
-  bar1.start(files.total, 0)
+  // bar1.start(files.total, 0)
   for (let i = 0; i < files.list.length; i++) {
     const file = files.list[i]
-    let info = await mediainfo(file.full)
-    await fsJSONWrite('F:/Anime-Storage/', file.folder, file.name, info)
-    bar1.update(i)
+    try {
+      let info = await mediainfo(file.full)
+      await fsJSONWrite('F:/Anime-Storage', file.folder, file.name, info)
+    } catch (ex) {
+      debuger.error(file.name, ex.message)
+    }
+    // bar1.update(i)
   }
 }).then(() => {
-  bar1.stop()
+  // bar1.stop()
   process.exit(0)
-}).catch(debuger.error)
+}).catch(ex => {
+  debuger.error(ex)
+  process.exit(0)
+})
